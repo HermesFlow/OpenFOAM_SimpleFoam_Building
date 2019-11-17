@@ -1,0 +1,205 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| ========= | |
+| \\ / F ield | OpenFOAM: The Open Source CFD Toolbox |
+| \\ / O peration | Version: 2.2.2 |
+| \\ / A nd | Web: www.OpenFOAM.com |
+| \\/ M anipulation | |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version 2.0;
+    format ascii;
+    class dictionary;
+    location "system";
+    object controlDict;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+Velocity {
+    field Umean;
+
+    expressions
+    (
+        {
+
+  	       lookuptables (
+		      {
+			name Ux;
+			outOfBounds clamp ;
+			fileName "Ux.data" ;
+		      }
+		);
+
+            target value;
+            patchName floor;
+            variables "floorZ=min(pts().z);";
+            expression "vector(Ux(floorZ),0,0)";
+        }
+
+        {
+
+  	       lookuptables (
+		      {
+			name Ux;
+			outOfBounds clamp ;
+			fileName "Ux.data" ;
+		      }
+		);
+            target value;
+            patchName ceiling;
+            variables  "ceilZ=max(pts().z);";
+            expression "vector(Ux(ceilZ),0,0)";
+       }
+
+       {
+  	       lookuptables (
+		      {
+			name Ux;
+			outOfBounds clamp ;
+			fileName "Ux.data" ;
+		      }
+
+		);
+
+ 	    target value; 
+            patchName left;
+            expression "vector(0,0,0)";
+       }
+
+       {
+  	       lookuptables (
+		      {
+			name Ux;
+			outOfBounds clamp ;
+			fileName "Ux.data" ;
+		      }
+
+		);
+
+            target value;
+            patchName right;
+            expression "vector(0,0,0)";
+       }
+
+
+    );
+}
+
+VelocityBoundaries {
+    field U;
+
+    expressions
+    (
+        {
+            target value;
+            patchName floor;
+            variables "floorZ=min(pts().z);";
+            expression "vector(0,0,0)";
+        }
+
+        {
+
+  	       lookuptables (
+		      {
+			name Ux;
+			outOfBounds clamp ;
+			fileName "Ux.data" ;
+		      }
+            variables  "ceilZ=max(pts().z);";
+            expression "vector(Ux(ceilZ),0,0)";
+       }
+
+       {
+            target value;
+            patchName left;
+            variables "floorZ=min(pts().z);";
+            expression "vector(0,0,0)";
+       }
+
+       {
+            target value;
+            patchName right;
+            variables  "ceilZ=max(pts().z);";
+            expression "vector(0,0,0)";
+       }
+
+    );
+}
+
+
+Tmean {
+    field Tmean;
+
+    expressions
+    (
+        {
+
+  	       lookuptables (
+		      {
+			name Theta;
+			outOfBounds clamp ;
+			fileName "Theta.data" ;
+		      }
+		);
+
+            target value;
+            patchName floor;
+            variables "floorZ=min(pts().z);";
+            expression "Theta(floorZ)";
+        }
+
+        {
+
+  	       lookuptables (
+		      {
+			name Theta;
+			outOfBounds clamp ;
+			fileName "Theta.data" ;
+		      }
+		);
+
+            target value;
+            patchName ceiling;
+            variables  "ceilZ=max(pts().z);";
+            expression "Theta(ceilZ)";
+       }
+
+       {
+
+  	       lookuptables (
+		      {
+			name Theta;
+			outOfBounds clamp ;
+			fileName "Theta.data" ;
+		      }
+		);
+
+            target value;
+            patchName left;
+            variables  "ceilZ=max(pts().z);";
+            expression "Theta(pos().z)";
+       }
+
+       {
+
+  	       lookuptables (
+		      {
+			name Theta;
+			outOfBounds clamp ;
+			fileName "Theta.data" ;
+		      }
+		);
+
+            target value;
+            patchName right;
+            variables  "ceilZ=max(pts().z);";
+            expression "Theta(pos().z)";
+       }
+
+    );
+}
+
+
+
+
+// ************************************************************************* //

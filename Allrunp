@@ -1,0 +1,24 @@
+#!/bin/bash
+cd ${0%/*} || exit 1    # run from this directory
+
+# Source tutorial run functions
+. $WM_PROJECT_DIR/bin/tools/RunFunctions
+
+application=`getApplication`
+
+./Allclean
+foamJob -wait blockMesh 
+foamJob -wait -append surfaceFeatureExtract
+#foamJob -wait -append changeDictionary 
+foamJob -wait -append decomposePar
+foamJob -wait -append -parallel snappyHexMesh -overwrite 
+foamJob -wait -append reconstructParMesh -mergeTol 1e-6 -constant
+foamJob -wait -append decomposePar -fields
+
+#mpirun -np 6 potentialFoam -parallel
+#foamJob -wait -parallel potentialFoam 
+foamJob -wait -append -parallel simpleFoam
+#foamJob -append reconstructPar
+foamJob -wait -append reconstructPar #Mesh -mergeTol 1e-6 -constant
+# ----------------------------------------------------------------- end-of-file
+

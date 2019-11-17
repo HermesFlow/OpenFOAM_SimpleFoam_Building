@@ -1,0 +1,32 @@
+#!/bin/sh
+cd ${0%/*} || exit 1    # run from this directory
+
+
+./Allclean #Nir
+
+
+if [ -z "$1" ]
+  then
+    echo "No argument supplied - not rotating"
+else
+    echo "not rotating "$1" degrees"
+    mv constant/triSurface/topo.stl constant/triSurface/topobkup.stl
+    mv constant/triSurface/buildings.stl constant/triSurface/buildingsbkup.stl
+    surfaceTransformPoints -rollPitchYaw "(0 0 $1)" constant/triSurface/topobkup.stl constant/triSurface/topo.stl
+    surfaceTransformPoints -rollPitchYaw "(0 0 $1)" constant/triSurface/buildingsbkup.stl constant/triSurface/buildings.stl
+fi
+
+
+# Source tutorial run functions
+. $WM_PROJECT_DIR/bin/tools/RunFunctions
+
+runApplication surfaceFeatureExtract
+
+runApplication blockMesh
+
+#runApplication decomposePar
+foamJob -wait snappyHexMesh -overwrite
+
+runApplication $(getApplication)
+
+# ----------------------------------------------------------------- end-of-file
